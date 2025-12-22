@@ -1,0 +1,38 @@
+[
+  {
+    "key": "production",
+    "name": "Production",
+    "dimension2Key": "scale",
+    "direction": "positive",
+    "unit": null
+  },
+  {
+    "key": "sales",
+    "name": "Sales",
+    "dimension2Key": "scale",
+    "direction": "positive",
+    "unit": null
+  },
+  {
+    "key": "profit_margin",
+    "name": "Profit Margin",
+    "dimension2Key": "profitability",
+    "direction": "positive",
+    "unit": null
+  },
+  {
+    "key": "debt_ratio",
+    "name": "Debt Ratio",
+    "dimension2Key": "solvency",
+    "direction": "negative",
+    "unit": null
+  },
+  {
+    "key": "rd_ratio",
+    "name": "R&D Ratio",
+    "dimension2Key": "innovation",
+    "direction": "positive",
+    "unit": null
+  }
+]
+

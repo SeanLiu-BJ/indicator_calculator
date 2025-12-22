@@ -1,0 +1,22 @@
+entity,year,industry,production,sales,profit_margin,debt_ratio,rd_ratio
+Alpha Steel,2019,steel,120,300,0.12,0.55,0.03
+Alpha Steel,2020,steel,110,280,0.10,0.60,0.035
+Alpha Steel,2021,steel,130,320,0.11,0.58,0.04
+Alpha Steel,2022,steel,140,360,0.13,0.52,0.045
+Alpha Steel,2023,steel,150,390,0.14,0.50,0.05
+Beta Steel,2019,steel,90,210,0.08,0.70,0.02
+Beta Steel,2020,steel,95,220,0.085,0.68,0.022
+Beta Steel,2021,steel,100,240,0.09,0.66,0.025
+Beta Steel,2022,steel,105,255,0.095,0.64,0.028
+Beta Steel,2023,steel,110,270,0.10,0.62,0.03
+Gamma Chemicals,2019,chemical,80,260,0.16,0.40,0.06
+Gamma Chemicals,2020,chemical,85,275,0.155,0.42,0.062
+Gamma Chemicals,2021,chemical,88,290,0.15,0.45,0.065
+Gamma Chemicals,2022,chemical,92,310,0.145,0.47,0.067
+Gamma Chemicals,2023,chemical,96,330,0.14,0.50,0.07
+Delta Tech,2019,tech,40,500,0.22,0.25,0.12
+Delta Tech,2020,tech,45,540,0.21,0.27,0.125
+Delta Tech,2021,tech,55,600,0.20,0.30,0.13
+Delta Tech,2022,tech,60,650,0.19,0.33,0.135
+Delta Tech,2023,tech,70,720,0.18,0.35,0.14
+

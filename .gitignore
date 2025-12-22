@@ -1,0 +1,23 @@
+# macOS
+.DS_Store
+
+# local app data (default backend storage)
+.localdata/
+
+# Python
+backend/.venv/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Node / frontend / desktop
+**/node_modules/
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+
+frontend/dist/
+desktop/dist/
+desktop/out/
+desktop/build/

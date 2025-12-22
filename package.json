@@ -1,0 +1,11 @@
+{
+  "name": "indicator_calculator",
+  "private": true,
+  "scripts": {
+    "install:frontend": "npm --prefix frontend install",
+    "install:desktop": "npm --prefix desktop install",
+    "build:frontend": "npm --prefix frontend run build",
+    "dev:desktop": "npm --prefix desktop run dev"
+  }
+}
+
