@@ -2,10 +2,9 @@
   "name": "indicator_calculator",
   "private": true,
   "scripts": {
-    "install:frontend": "npm --prefix frontend install",
+    "install:frontend": "pnpm --dir frontend install",
     "install:desktop": "npm --prefix desktop install",
-    "build:frontend": "npm --prefix frontend run build",
+    "build:frontend": "pnpm --dir frontend build",
     "dev:desktop": "npm --prefix desktop run dev"
   }
 }
-

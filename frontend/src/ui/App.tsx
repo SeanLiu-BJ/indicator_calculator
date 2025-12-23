@@ -14,32 +14,25 @@ function Shell() {
   const location = useLocation();
   const selectedKey = location.pathname.split("/")[1] || "onboarding";
 
+  const items = React.useMemo(
+    () => [
+      { key: "onboarding", label: <Link to="/">快速开始</Link> },
+      { key: "datasets", label: <Link to="/datasets">数据集</Link> },
+      { key: "indicators", label: <Link to="/indicators">指标库</Link> },
+      { key: "models", label: <Link to="/models">权重模型</Link> },
+      { key: "compute", label: <Link to="/compute">计算</Link> },
+      { key: "results", label: <Link to="/results">结果</Link> },
+    ],
+    []
+  );
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider width={220}>
         <div style={{ height: 48, color: "white", fontSize: 16, display: "flex", alignItems: "center", paddingLeft: 16 }}>
           Indicator
         </div>
-        <Menu theme="dark" mode="inline" selectedKeys={[selectedKey]}>
-          <Menu.Item key="onboarding">
-            <Link to="/">快速开始</Link>
-          </Menu.Item>
-          <Menu.Item key="datasets">
-            <Link to="/datasets">数据集</Link>
-          </Menu.Item>
-          <Menu.Item key="indicators">
-            <Link to="/indicators">指标库</Link>
-          </Menu.Item>
-          <Menu.Item key="models">
-            <Link to="/models">权重模型</Link>
-          </Menu.Item>
-          <Menu.Item key="compute">
-            <Link to="/compute">计算</Link>
-          </Menu.Item>
-          <Menu.Item key="results">
-            <Link to="/results">结果</Link>
-          </Menu.Item>
-        </Menu>
+        <Menu theme="dark" mode="inline" selectedKeys={[selectedKey]} items={items} />
       </Sider>
       <Layout>
         <Header style={{ background: "#fff", padding: "0 16px" }}>
@@ -67,4 +60,3 @@ export function App() {
     </HashRouter>
   );
 }
-

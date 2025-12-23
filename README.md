@@ -12,6 +12,8 @@
 
 打开 `http://127.0.0.1:5173`（Vite 热更新），后端 API 通过 `/api` 代理到 `127.0.0.1:8000`（Uvicorn `--reload`）。
 
+前端开发依赖：Node `>=18` + `pnpm`（见 `frontend/package.json` 的 `packageManager`）。
+
 ### 1) 后端（FastAPI）
 
 ```bash
@@ -23,8 +25,8 @@ python -m pip install -r backend/requirements.txt
 ### 2) 前端（React）
 
 ```bash
-npm --prefix frontend install
-npm --prefix frontend run build
+pnpm --dir frontend install
+pnpm --dir frontend build
 ```
 
 ### 3) 桌面壳（Electron）

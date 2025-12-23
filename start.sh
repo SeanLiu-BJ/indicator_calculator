@@ -23,7 +23,20 @@ if [[ ! -x "$UVICORN_BIN" ]]; then
   exit 1
 fi
 
-FRONTEND_CMD=(npm --prefix "$ROOT_DIR/frontend" run dev -- --host "$HOST" --port "$FRONTEND_PORT")
+PNPM_BIN="${PNPM_BIN:-pnpm}"
+if ! command -v "$PNPM_BIN" >/dev/null 2>&1; then
+  echo "pnpm not found."
+  echo "Hint: install pnpm (requires Node 18+):"
+  echo "  npm i -g pnpm"
+  exit 1
+fi
+if ! "$PNPM_BIN" -v >/dev/null 2>&1; then
+  echo "pnpm failed to run."
+  echo "Hint: pnpm (and Vite 7) requires Node 18+."
+  exit 1
+fi
+
+FRONTEND_CMD=("$PNPM_BIN" dev -- --host "$HOST" --port "$FRONTEND_PORT")
 BACKEND_CMD=("$UVICORN_BIN" backend.app.main:app --reload --host "$HOST" --port "$BACKEND_PORT")
 
 backend_pid=""
@@ -80,7 +93,7 @@ echo "[backend] ${BACKEND_CMD[*]}"
 backend_pid="$!"
 
 echo "[frontend] ${FRONTEND_CMD[*]}"
-"${FRONTEND_CMD[@]}" &
+(cd "$ROOT_DIR/frontend" && "${FRONTEND_CMD[@]}") &
 frontend_pid="$!"
 
 echo
