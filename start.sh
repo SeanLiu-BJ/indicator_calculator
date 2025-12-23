@@ -7,6 +7,38 @@ HOST="${HOST:-127.0.0.1}"
 BACKEND_PORT="${BACKEND_PORT:-8000}"
 FRONTEND_PORT="${FRONTEND_PORT:-5173}"
 
+# frontend dev server config for Vite
+export INDICATOR_UI_HOST="${INDICATOR_UI_HOST:-$HOST}"
+export INDICATOR_UI_PORT="${INDICATOR_UI_PORT:-$FRONTEND_PORT}"
+
+# Ensure Node version is compatible with Vite (>=20.19 or >=22.12).
+meets_node_requirement() {
+  command -v node >/dev/null 2>&1 || return 1
+  node -e '
+    const [maj, min] = process.versions.node.split(".").map(Number);
+    const ok = (maj === 20 && min >= 19) || (maj === 22 && min >= 12) || (maj > 22);
+    process.exit(ok ? 0 : 1);
+  ' >/dev/null 2>&1
+}
+
+if ! meets_node_requirement; then
+  for candidate in "/usr/local/opt/node@22/bin" "/opt/homebrew/opt/node@22/bin"; do
+    if [[ -x "$candidate/node" ]]; then
+      export PATH="$candidate:$PATH"
+      break
+    fi
+  done
+fi
+
+if ! meets_node_requirement; then
+  current="$(command -v node >/dev/null 2>&1 && node -v || echo 'missing')"
+  echo "Node version not supported: ${current}"
+  echo "Vite requires Node >=20.19 or >=22.12."
+  echo "If you installed node@22 via Homebrew (keg-only), add it to PATH:"
+  echo "  echo 'export PATH=\"/usr/local/opt/node@22/bin:\$PATH\"' >> ~/.zshrc"
+  exit 1
+fi
+
 # backend storage (defaults to repo-local, ignored by git)
 export INDICATOR_DATA_DIR="${INDICATOR_DATA_DIR:-"$ROOT_DIR/.localdata"}"
 export INDICATOR_HOST="${INDICATOR_HOST:-$HOST}"
@@ -26,17 +58,17 @@ fi
 PNPM_BIN="${PNPM_BIN:-pnpm}"
 if ! command -v "$PNPM_BIN" >/dev/null 2>&1; then
   echo "pnpm not found."
-  echo "Hint: install pnpm (requires Node 18+):"
-  echo "  npm i -g pnpm"
+  echo "Hint: install pnpm:"
+  echo "  corepack enable && corepack prepare pnpm@10.26.1 --activate"
   exit 1
 fi
 if ! "$PNPM_BIN" -v >/dev/null 2>&1; then
   echo "pnpm failed to run."
-  echo "Hint: pnpm (and Vite 7) requires Node 18+."
+  echo "Hint: make sure you're using Node >=20.19 or >=22.12."
   exit 1
 fi
 
-FRONTEND_CMD=("$PNPM_BIN" dev -- --host "$HOST" --port "$FRONTEND_PORT")
+FRONTEND_CMD=("$PNPM_BIN" dev)
 BACKEND_CMD=("$UVICORN_BIN" backend.app.main:app --reload --host "$HOST" --port "$BACKEND_PORT")
 
 backend_pid=""
