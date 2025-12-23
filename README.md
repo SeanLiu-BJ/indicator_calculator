@@ -4,6 +4,14 @@
 
 ## 开发启动
 
+### 一键启动（前后端热更新）
+
+```bash
+./start.sh
+```
+
+打开 `http://127.0.0.1:5173`（Vite 热更新），后端 API 通过 `/api` 代理到 `127.0.0.1:8000`（Uvicorn `--reload`）。
+
 ### 1) 后端（FastAPI）
 
 ```bash
@@ -27,4 +35,3 @@ npm --prefix desktop run dev
 ```
 
 > Electron 会自动拉起本地 FastAPI（仅监听 127.0.0.1）并打开窗口。
-
