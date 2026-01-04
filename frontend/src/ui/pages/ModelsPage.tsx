@@ -30,6 +30,12 @@ export function ModelsPage() {
     refresh();
   }, []);
 
+  const methodLabel = React.useCallback((m: Method) => {
+    if (m === "entropy") return "熵权法";
+    if (m === "pca") return "PCA";
+    return "AHP";
+  }, []);
+
   return (
     <Space direction="vertical" style={{ width: "100%" }} size={16}>
       <Card
@@ -46,10 +52,10 @@ export function ModelsPage() {
         <Table
           rowKey="id"
           columns={[
-            { title: "Name", dataIndex: "name", key: "name" },
-            { title: "Method", dataIndex: "method", key: "method", width: 100 },
-            { title: "Indicators", dataIndex: "indicatorKeys", key: "indicatorKeys", width: 110, render: (v: string[]) => v.length },
-            { title: "Created", dataIndex: "createdAt", key: "createdAt", width: 180 },
+            { title: "名称", dataIndex: "name", key: "name" },
+            { title: "算法", dataIndex: "method", key: "method", width: 110, render: (v: Method) => methodLabel(v) },
+            { title: "指标数", dataIndex: "indicatorKeys", key: "indicatorKeys", width: 110, render: (v: string[]) => v.length },
+            { title: "创建时间", dataIndex: "createdAt", key: "createdAt", width: 180 },
           ]}
           dataSource={models}
           pagination={{ pageSize: 8 }}
@@ -116,7 +122,7 @@ export function ModelsPage() {
 
           <Form layout="vertical" form={form} initialValues={{ pcaCumVarThreshold: 0.85 }}>
             <Form.Item name="name" label="模型名称" rules={[{ required: true }]}>
-              <Input placeholder="My Model" />
+              <Input placeholder="例如：我的模型" />
             </Form.Item>
 
             <Form.Item name="indicatorKeys" label="指标集合" rules={[{ required: true }]}>
@@ -146,7 +152,7 @@ export function ModelsPage() {
               <Form.Item
                 name="ahpPairs"
                 label="AHP 两两比较（可选，留空默认全 1）"
-                tooltip="填写 a>b 的重要性比值（1~9），系统会自动补齐倒数。示例：production vs sales = 1"
+                tooltip="填写 a>b 的重要性比值（1~9），系统会自动补齐倒数。示例：production 对 sales = 1"
               >
                 <AhpPairsEditor indicators={selectedIndicatorKeys} />
               </Form.Item>
@@ -185,7 +191,7 @@ function AhpPairsEditor(props: {
         const key = `${it.a}__${it.b}`;
         return (
           <Space key={key} wrap>
-            <Typography.Text style={{ width: 220 }}>{`${it.a} vs ${it.b}`}</Typography.Text>
+            <Typography.Text style={{ width: 220 }}>{`${it.a} 对 ${it.b}`}</Typography.Text>
             <InputNumber
               min={1}
               max={9}

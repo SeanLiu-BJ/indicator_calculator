@@ -44,12 +44,12 @@ export function DatasetsPage() {
   }, [selectedId]);
 
   const columns = [
-    { title: "Name", dataIndex: "name", key: "name" },
-    { title: "Rows", dataIndex: "rowCount", key: "rowCount", width: 90 },
-    { title: "Sample", dataIndex: "isSample", key: "isSample", width: 90, render: (v: boolean) => (v ? "Yes" : "") },
-    { title: "Created", dataIndex: "createdAt", key: "createdAt", width: 180 },
+    { title: "名称", dataIndex: "name", key: "name" },
+    { title: "行数", dataIndex: "rowCount", key: "rowCount", width: 90 },
+    { title: "示例", dataIndex: "isSample", key: "isSample", width: 90, render: (v: boolean) => (v ? "是" : "") },
+    { title: "创建时间", dataIndex: "createdAt", key: "createdAt", width: 180 },
     {
-      title: "Action",
+      title: "操作",
       key: "action",
       width: 120,
       render: (_: any, r: DatasetSummary) => (
@@ -85,7 +85,7 @@ export function DatasetsPage() {
         }}
       />
 
-      <Drawer width={980} open={!!selectedId} onClose={() => setSelectedId(null)} title={detail?.name || "Dataset"}>
+      <Drawer width={980} open={!!selectedId} onClose={() => setSelectedId(null)} title={detail?.name || "数据集"}>
         {detail ? (
           <Tabs
             items={[
@@ -196,7 +196,7 @@ function ImportModal(props: { open: boolean; onClose: () => void; onImported: ()
         <Form.Item label="数据集名称" name="name">
           <Input placeholder="例如：我的业务数据 2023" />
         </Form.Item>
-        <Form.Item label="Year（当 CSV 缺少 year 列时使用）" name="yearOverride">
+        <Form.Item label="年份（当 CSV 缺少 year 列时使用）" name="yearOverride">
           <InputNumber style={{ width: "100%" }} placeholder="例如：2023" />
         </Form.Item>
 
@@ -346,12 +346,18 @@ function MappingEditor(props: {
         size="small"
         pagination={false}
         columns={[
-          { title: "Indicator Key", dataIndex: "key", key: "key", width: 200 },
-          { title: "Name", dataIndex: "name", key: "name", width: 200 },
-          { title: "Dimension2", dataIndex: "dimension2Key", key: "dimension2Key", width: 160 },
-          { title: "Direction", dataIndex: "direction", key: "direction", width: 120 },
+          { title: "指标 Key", dataIndex: "key", key: "key", width: 200 },
+          { title: "名称", dataIndex: "name", key: "name", width: 200 },
+          { title: "二级维度", dataIndex: "dimension2Key", key: "dimension2Key", width: 160 },
           {
-            title: "Column",
+            title: "方向",
+            dataIndex: "direction",
+            key: "direction",
+            width: 120,
+            render: (v: Indicator["direction"]) => (v === "positive" ? "正向" : "负向"),
+          },
+          {
+            title: "列名",
             key: "col",
             render: (_: any, ind: Indicator) => {
               const value = mapping?.map?.[ind.key];

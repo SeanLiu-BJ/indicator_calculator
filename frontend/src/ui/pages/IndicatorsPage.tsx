@@ -40,12 +40,18 @@ export function IndicatorsPage() {
           rowKey="key"
           loading={loading}
           columns={[
-            { title: "Key", dataIndex: "key", key: "key", width: 200 },
-            { title: "Name", dataIndex: "name", key: "name", width: 220 },
-            { title: "Dimension2", dataIndex: "dimension2Key", key: "dimension2Key", width: 200 },
-            { title: "Direction", dataIndex: "direction", key: "direction", width: 120 },
+            { title: "指标 Key", dataIndex: "key", key: "key", width: 200 },
+            { title: "名称", dataIndex: "name", key: "name", width: 220 },
+            { title: "二级维度", dataIndex: "dimension2Key", key: "dimension2Key", width: 200 },
             {
-              title: "Action",
+              title: "方向",
+              dataIndex: "direction",
+              key: "direction",
+              width: 120,
+              render: (v: Indicator["direction"]) => (v === "positive" ? "正向" : "负向"),
+            },
+            {
+              title: "操作",
               key: "action",
               width: 120,
               render: (_: any, r: Indicator) => (
@@ -91,10 +97,10 @@ export function IndicatorsPage() {
             <Input placeholder="profit_margin" />
           </Form.Item>
           <Form.Item name="name" label="名称" rules={[{ required: true }]}>
-            <Input placeholder="Profit Margin" />
+            <Input placeholder="例如：利润率" />
           </Form.Item>
           <Form.Item name="dimension2Key" label="二级维度" rules={[{ required: true }]}>
-            <Input placeholder="profitability" />
+            <Input placeholder="例如：盈利能力" />
           </Form.Item>
           <Form.Item name="direction" label="方向" rules={[{ required: true }]}>
             <Select
@@ -109,4 +115,3 @@ export function IndicatorsPage() {
     </Space>
   );
 }
-

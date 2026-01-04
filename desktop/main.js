@@ -6,7 +6,7 @@ const crypto = require("crypto");
 const { spawn } = require("child_process");
 
 if (!process.versions || !process.versions.electron) {
-  console.error("This entrypoint must be run with Electron. Use `npm --prefix desktop run dev`.");
+  console.error("该入口必须在 Electron 中运行。请使用 `npm --prefix desktop run dev` 启动。");
   process.exit(1);
 }
 
@@ -42,7 +42,7 @@ function waitForHealth(url, timeoutMs) {
 
       function retry() {
         if (Date.now() - start > timeoutMs) {
-          reject(new Error("Backend health check timed out"));
+          reject(new Error("后端健康检查超时"));
           return;
         }
         setTimeout(tick, 200);
@@ -96,7 +96,7 @@ async function startBackend(repoRoot) {
 
   backendProcess.on("exit", (code) => {
     if (code !== 0) {
-      console.error(`[backend] exited with code ${code}`);
+      console.error(`[backend] 异常退出，退出码：${code}`);
     }
   });
 

@@ -23,10 +23,15 @@ export function ComputePage() {
     <Card title="计算指数">
       <Form layout="vertical" form={form}>
         <Form.Item name="name" label="结果名称（可选）">
-          <Input placeholder="Result / Model X" />
+          <Input placeholder="例如：结果 / 模型 X" />
         </Form.Item>
         <Form.Item name="weightModelId" label="选择权重模型" rules={[{ required: true }]}>
-          <Select options={models.map((m) => ({ value: m.id, label: `${m.name} (${m.method})` }))} />
+          <Select
+            options={models.map((m) => ({
+              value: m.id,
+              label: `${m.name}（${m.method === "entropy" ? "熵权法" : m.method === "pca" ? "PCA" : "AHP"}）`,
+            }))}
+          />
         </Form.Item>
         <Form.Item name="datasetIds" label="选择目标数据集" rules={[{ required: true }]}>
           <Select

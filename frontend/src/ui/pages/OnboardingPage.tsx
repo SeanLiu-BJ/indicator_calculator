@@ -53,6 +53,12 @@ export function OnboardingPage() {
     }));
   }, [columns]);
 
+  const algoLabel = React.useMemo(() => {
+    if (algo === "entropy") return "熵权法";
+    if (algo === "pca") return "PCA";
+    return "AHP";
+  }, [algo]);
+
   return (
     <Space direction="vertical" style={{ width: "100%" }} size={16}>
       <Card>
@@ -93,9 +99,8 @@ export function OnboardingPage() {
       </Card>
 
       <Card title="图表（可选）" loading={loading}>
-        <ChartPanel rows={rows} title={`Sample / ${algo.toUpperCase()}`} />
+        <ChartPanel rows={rows} title={`示例 / ${algoLabel}`} />
       </Card>
     </Space>
   );
 }
-

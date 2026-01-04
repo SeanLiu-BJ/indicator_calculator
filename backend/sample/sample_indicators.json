@@ -1,38 +1,37 @@
 [
   {
     "key": "production",
-    "name": "Production",
-    "dimension2Key": "scale",
+    "name": "产量",
+    "dimension2Key": "规模",
     "direction": "positive",
     "unit": null
   },
   {
     "key": "sales",
-    "name": "Sales",
-    "dimension2Key": "scale",
+    "name": "销量",
+    "dimension2Key": "规模",
     "direction": "positive",
     "unit": null
   },
   {
     "key": "profit_margin",
-    "name": "Profit Margin",
-    "dimension2Key": "profitability",
+    "name": "利润率",
+    "dimension2Key": "盈利能力",
     "direction": "positive",
     "unit": null
   },
   {
     "key": "debt_ratio",
-    "name": "Debt Ratio",
-    "dimension2Key": "solvency",
+    "name": "资产负债率",
+    "dimension2Key": "偿债能力",
     "direction": "negative",
     "unit": null
   },
   {
     "key": "rd_ratio",
-    "name": "R&D Ratio",
-    "dimension2Key": "innovation",
+    "name": "研发投入占比",
+    "dimension2Key": "创新能力",
     "direction": "positive",
     "unit": null
   }
 ]
-
