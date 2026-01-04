@@ -47,7 +47,7 @@ def seed_sample(store: Store) -> dict[str, str]:
 
     store.create_dataset(
         dataset_id=dataset_id,
-        name="Sample Data",
+        name="示例数据",
         source_type="sample",
         csv_path=csv_path,
         schema_path=schema_path,
@@ -88,7 +88,7 @@ def seed_sample(store: Store) -> dict[str, str]:
 
     entropy_model: WeightModelRecord = train_weight_model(
         method="entropy",
-        name="Sample / Entropy",
+        name="示例 / 熵权法",
         indicator_keys=indicator_keys,
         indicators=indicators,
         x_train=x_train,
@@ -100,7 +100,7 @@ def seed_sample(store: Store) -> dict[str, str]:
 
     pca_model: WeightModelRecord = train_weight_model(
         method="pca",
-        name="Sample / PCA",
+        name="示例 / PCA",
         indicator_keys=indicator_keys,
         indicators=indicators,
         x_train=x_train,
@@ -113,7 +113,7 @@ def seed_sample(store: Store) -> dict[str, str]:
 
     ahp_model: WeightModelRecord = train_weight_model(
         method="ahp",
-        name="Sample / AHP",
+        name="示例 / AHP",
         indicator_keys=indicator_keys,
         indicators=indicators,
         x_train=x_train,
@@ -175,9 +175,9 @@ def seed_sample(store: Store) -> dict[str, str]:
         }
         store.create_result(rec)
 
-    compute_result(entropy_model, entropy_result_id, "Sample Result / Entropy")
-    compute_result(pca_model, pca_result_id, "Sample Result / PCA")
-    compute_result(ahp_model, ahp_result_id, "Sample Result / AHP")
+    compute_result(entropy_model, entropy_result_id, "示例结果 / 熵权法")
+    compute_result(pca_model, pca_result_id, "示例结果 / PCA")
+    compute_result(ahp_model, ahp_result_id, "示例结果 / AHP")
 
     return {
         "sampleDatasetId": dataset_id,

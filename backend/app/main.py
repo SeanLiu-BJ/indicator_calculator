@@ -60,7 +60,7 @@ def require_auth(request: Request) -> None:
     auth = request.headers.get("authorization", "")
     expected = f"Bearer {settings.token}"
     if auth != expected:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=401, detail="未授权")
 
 
 api = APIRouter(prefix="/api", dependencies=[Depends(require_auth)])
@@ -84,19 +84,19 @@ def onboarding() -> OnboardingResponse:
             sample_dataset_id = ds["id"]
             break
     if not sample_dataset_id:
-        raise HTTPException(404, "sample dataset not found")
+        raise HTTPException(404, "未找到示例数据集")
 
     # deterministic ids if seeded, fallback to latest by method
     def pick_model(method: str) -> str:
         models = [m for m in store.list_weight_models() if m["method"] == method and sample_dataset_id in m.get("trainedOnDatasetIds", [])]
         if not models:
-            raise HTTPException(404, f"sample weight model not found: {method}")
+            raise HTTPException(404, f"未找到示例权重模型：{method}")
         return models[0]["id"]
 
     def pick_result(model_id: str) -> str:
         results = [r for r in store.list_results() if r["weightModelId"] == model_id and sample_dataset_id in r["datasetIds"]]
         if not results:
-            raise HTTPException(404, f"sample result not found for model: {model_id}")
+            raise HTTPException(404, f"未找到示例结果集（模型）：{model_id}")
         return results[0]["id"]
 
     entropy_model_id = pick_model("entropy")
@@ -168,7 +168,7 @@ async def import_dataset(file: UploadFile = File(...), name: str | None = None, 
     parsed = parse_csv_text(normalized)
     store.create_dataset(
         dataset_id=dataset_id,
-        name=name or file.filename or "Imported Dataset",
+        name=name or file.filename or "导入的数据集",
         source_type="file",
         csv_path=csv_path,
         schema_path=schema_path,
@@ -197,7 +197,7 @@ def import_dataset_text(req: ImportTextRequest) -> ImportResponse:
     parsed = parse_csv_text(normalized)
     store.create_dataset(
         dataset_id=dataset_id,
-        name=req.name or "Pasted Dataset",
+        name=req.name or "粘贴的数据集",
         source_type="paste",
         csv_path=csv_path,
         schema_path=schema_path,
@@ -389,7 +389,7 @@ def compute(req: ComputeRequest) -> ComputeResponse:
 
     rec: ResultSetRecord = {
         "id": result_id,
-        "name": req.name or f"Result / {model['name']}",
+        "name": req.name or f"结果 / {model['name']}",
         "createdAt": now_iso(),
         "datasetIds": req.datasetIds,
         "weightModelId": model["id"],

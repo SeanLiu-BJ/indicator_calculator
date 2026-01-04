@@ -15,7 +15,7 @@ export function ResultsPage() {
 
   async function refresh() {
     const list = await api.get<ResultSummary[]>("/results");
-    setResults(list.filter((r) => !r.name.startsWith("Sample Result")));
+    setResults(list.filter((r) => !r.id.startsWith("sample_result_")));
   }
 
   React.useEffect(() => {
@@ -54,11 +54,11 @@ export function ResultsPage() {
         <Table
           rowKey="id"
           columns={[
-            { title: "Name", dataIndex: "name", key: "name" },
-            { title: "Rows", dataIndex: "rowCount", key: "rowCount", width: 90 },
-            { title: "Created", dataIndex: "createdAt", key: "createdAt", width: 180 },
+            { title: "名称", dataIndex: "name", key: "name" },
+            { title: "行数", dataIndex: "rowCount", key: "rowCount", width: 90 },
+            { title: "创建时间", dataIndex: "createdAt", key: "createdAt", width: 180 },
             {
-              title: "Action",
+              title: "操作",
               key: "action",
               width: 140,
               render: (_: any, r: ResultSummary) => (
@@ -77,7 +77,7 @@ export function ResultsPage() {
         width={1000}
         open={!!selectedId}
         onClose={() => setSelectedId(null)}
-        title={detail?.name || "Result"}
+        title={detail?.name || "结果"}
         extra={
           selectedId ? (
             <Button href={`/api/results/${selectedId}/download`} target="_blank">
@@ -88,7 +88,7 @@ export function ResultsPage() {
       >
         {detail ? (
           <Space direction="vertical" style={{ width: "100%" }} size={16}>
-            <Typography.Text type="secondary">{`Rows: ${detail.rowCount}`}</Typography.Text>
+            <Typography.Text type="secondary">{`行数：${detail.rowCount}`}</Typography.Text>
             <Card size="small" title="指数表格">
               <Table
                 rowKey={(r) => `${r.entity}-${r.year}`}
