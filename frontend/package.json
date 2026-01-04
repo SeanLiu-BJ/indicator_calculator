@@ -14,7 +14,8 @@
     "echarts-for-react": "3.0.5",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-router-dom": "7.11.0"
+    "react-router-dom": "7.11.0",
+    "vibe-kanban-web-companion": "^0.0.5"
   },
   "devDependencies": {
     "@types/react": "19.2.7",
@@ -22,5 +23,8 @@
     "@vitejs/plugin-react": "5.1.2",
     "typescript": "5.9.3",
     "vite": "7.3.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
   }
 }
