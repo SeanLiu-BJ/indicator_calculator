@@ -8,8 +8,10 @@ import { App } from "./ui/App";
 initTokenFromUrl();
 
 createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
+  <>
     <VibeKanbanWebCompanion />
-    <App />
-  </React.StrictMode>
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  </>
 );
