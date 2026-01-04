@@ -14,7 +14,7 @@ export function ComputePage() {
   React.useEffect(() => {
     (async () => {
       const [d, m] = await Promise.all([api.get<DatasetSummary[]>("/datasets"), api.get<WeightModel[]>("/weight-models")]);
-      setDatasets(d.filter((x) => !x.isSample));
+      setDatasets(d);
       setModels(m);
     })();
   }, []);
@@ -29,7 +29,13 @@ export function ComputePage() {
           <Select options={models.map((m) => ({ value: m.id, label: `${m.name} (${m.method})` }))} />
         </Form.Item>
         <Form.Item name="datasetIds" label="选择目标数据集" rules={[{ required: true }]}>
-          <Select mode="multiple" options={datasets.map((d) => ({ value: d.id, label: d.name }))} />
+          <Select
+            mode="multiple"
+            options={datasets.map((d) => ({
+              value: d.id,
+              label: d.isSample ? `${d.name} (Sample)` : d.name,
+            }))}
+          />
         </Form.Item>
         <Space>
           <Button
