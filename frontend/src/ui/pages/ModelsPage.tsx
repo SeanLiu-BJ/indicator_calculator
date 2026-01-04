@@ -22,7 +22,7 @@ export function ModelsPage() {
       api.get<Indicator[]>("/indicators"),
     ]);
     setModels(m);
-    setDatasets(d.filter((x) => !x.isSample));
+    setDatasets(d);
     setIndicators(i);
   }
 
@@ -127,7 +127,13 @@ export function ModelsPage() {
             </Form.Item>
 
             <Form.Item name="datasetIds" label={method === "ahp" ? "标准化数据集（z-score 参数）" : "训练数据集"} rules={[{ required: true }]}>
-              <Select mode="multiple" options={datasets.map((d) => ({ value: d.id, label: d.name }))} />
+              <Select
+                mode="multiple"
+                options={datasets.map((d) => ({
+                  value: d.id,
+                  label: d.isSample ? `${d.name} (Sample)` : d.name,
+                }))}
+              />
             </Form.Item>
 
             {method === "pca" ? (
