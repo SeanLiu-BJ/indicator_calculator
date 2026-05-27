@@ -53,7 +53,5 @@ jobs:
           name: indicator-calculator-windows-installer
           path: |
             desktop/dist/installer/**/*.exe
-            desktop/dist/installer/**/*.yml
-            desktop/dist/installer/**/*.blockmap
           if-no-files-found: error
           retention-days: 14
