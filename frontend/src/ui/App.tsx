@@ -18,7 +18,7 @@ function Shell() {
     () => [
       { key: "onboarding", label: <Link to="/">快速开始</Link> },
       { key: "datasets", label: <Link to="/datasets">数据集</Link> },
-      { key: "indicators", label: <Link to="/indicators">指标库</Link> },
+      { key: "indicators", label: <Link to="/indicators">指标模板</Link> },
       { key: "models", label: <Link to="/models">权重模型</Link> },
       { key: "compute", label: <Link to="/compute">计算</Link> },
       { key: "results", label: <Link to="/results">结果</Link> },

@@ -3,9 +3,14 @@
 
 # local app data (default backend storage)
 .localdata/
+db.json
+datasets/
+models/
+results/
 
 # Python
 backend/.venv/
+.venv/
 **/__pycache__/
 *.py[cod]
 *.egg-info/
@@ -19,5 +24,6 @@ backend/.venv/
 
 frontend/dist/
 desktop/dist/
+desktop/.cache/
 desktop/out/
 desktop/build/

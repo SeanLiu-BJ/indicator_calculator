@@ -1,0 +1,59 @@
+name: Build Windows Installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  windows-installer:
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Enable pnpm
+        shell: pwsh
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.26.1 --activate
+          node --version
+          npm --version
+          pnpm --version
+          python --version
+
+      - name: Install frontend dependencies
+        shell: pwsh
+        run: pnpm --dir frontend install --frozen-lockfile
+
+      - name: Install desktop dependencies
+        shell: pwsh
+        run: npm --prefix desktop ci
+
+      - name: Build installer
+        shell: pwsh
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-windows-installer.ps1 -PythonExecutable python
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: indicator-calculator-windows-installer
+          path: |
+            desktop/dist/installer/**/*.exe
+            desktop/dist/installer/**/*.yml
+            desktop/dist/installer/**/*.blockmap
+          if-no-files-found: error
+          retention-days: 14

@@ -2,9 +2,13 @@
   "name": "indicator_calculator",
   "private": true,
   "scripts": {
+    "demo:start": "bash ./start.sh",
+    "validate": "bash ./scripts/validate.sh",
     "install:frontend": "pnpm --dir frontend install",
     "install:desktop": "npm --prefix desktop install",
-    "build:frontend": "pnpm --dir frontend build",
-    "dev:desktop": "npm --prefix desktop run dev"
+    "build:frontend": "pnpm --dir frontend exec vite build",
+    "build:desktop:release": "bash ./scripts/build-desktop-release.sh",
+    "dev:desktop": "npm --prefix desktop run dev",
+    "dev:desktop:vite": "npm --prefix desktop run dev:vite"
   }
 }

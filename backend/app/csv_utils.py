@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import io
+import re
 from dataclasses import dataclass
 from typing import Any
 
@@ -14,6 +15,14 @@ class CsvError(ValueError):
 class ParsedCsv:
     columns: list[str]
     rows: list[dict[str, str]]
+
+
+@dataclass
+class PreparedImport:
+    csv_text: str
+    schema: dict[str, Any]
+    auto_templates: list[dict[str, Any]]
+    detected_layout: str
 
 
 def _strip_bom(text: str) -> str:
@@ -40,6 +49,75 @@ def parse_csv_text(csv_text: str) -> ParsedCsv:
             cleaned[col] = "" if v is None else str(v).strip()
         rows.append(cleaned)
     return ParsedCsv(columns=columns, rows=rows)
+
+
+def _extract_year_from_header(header: str) -> int | None:
+    text = (header or "").strip()
+    match = re.search(r"(20\d{2})", text)
+    if not match:
+        return None
+    return int(match.group(1))
+
+
+def _looks_like_hierarchical_indicator_sheet(parsed: ParsedCsv) -> bool:
+    columns = set(parsed.columns)
+    if "一级指标" not in columns or "二级指标" not in columns:
+        return False
+    year_headers = [column for column in parsed.columns if _extract_year_from_header(column) is not None]
+    return len(year_headers) >= 2
+
+
+def _transform_hierarchical_indicator_sheet(
+    parsed: ParsedCsv,
+    *,
+    default_entity: str,
+) -> tuple[ParsedCsv, list[dict[str, Any]]]:
+    year_headers = [(column, _extract_year_from_header(column)) for column in parsed.columns]
+    year_headers = [(column, year) for column, year in year_headers if year is not None]
+    if not year_headers:
+        raise CsvError("原始指标表缺少可识别的年份列")
+
+    current_group = "default"
+    metric_names: list[str] = []
+    templates: list[dict[str, Any]] = []
+    rows_by_year: dict[int, dict[str, str]] = {}
+
+    for row in parsed.rows:
+        group_value = (row.get("一级指标", "") or "").strip()
+        if group_value:
+            current_group = group_value
+
+        metric_name = (row.get("二级指标", "") or "").strip()
+        if not metric_name:
+            continue
+
+        metric_names.append(metric_name)
+        templates.append(
+            {
+                "key": metric_name,
+                "name": metric_name,
+                "dimension2Key": current_group or "default",
+                "direction": "positive",
+                "unit": None,
+            }
+        )
+
+        for header, year in year_headers:
+            value = (row.get(header, "") or "").strip()
+            if value == "":
+                continue
+            row_for_year = rows_by_year.setdefault(year, {"entity": default_entity, "year": str(year)})
+            row_for_year[metric_name] = value
+
+    if not metric_names:
+        raise CsvError("原始指标表没有可转换的二级指标")
+
+    columns = ["entity", "year", *metric_names]
+    normalized_rows = [{column: row.get(column, "") for column in columns} for _, row in sorted(rows_by_year.items())]
+    if not normalized_rows:
+        raise CsvError("原始指标表没有可转换的数据行")
+
+    return ParsedCsv(columns=columns, rows=normalized_rows), templates
 
 
 def infer_schema(columns: list[str], rows: list[dict[str, str]]) -> dict[str, Any]:
@@ -130,4 +208,3 @@ def to_csv_text(columns: list[str], rows: list[dict[str, str]]) -> str:
     for r in rows:
         writer.writerow({c: r.get(c, "") for c in columns})
     return buf.getvalue()
-

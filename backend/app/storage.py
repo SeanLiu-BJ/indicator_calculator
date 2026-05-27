@@ -10,6 +10,7 @@ from typing import Any
 
 from .types import (
     DatasetRecord,
+    DatasetIndicatorRecord,
     DatasetSourceType,
     IndicatorRecord,
     MappingRecord,
@@ -55,6 +56,7 @@ class Store:
             for k, default in {
                 "datasets": {},
                 "indicators": {},
+                "datasetIndicators": {},
                 "mappings": {},
                 "mappingTemplates": {},
                 "weightModels": {},
@@ -69,6 +71,7 @@ class Store:
         self._db = {
             "datasets": {},
             "indicators": {},
+            "datasetIndicators": {},
             "mappings": {},
             "mappingTemplates": {},
             "weightModels": {},
@@ -136,6 +139,46 @@ class Store:
             self._db["datasets"][dataset_id]["name"] = name
             self._save()
 
+    def delete_dataset(self, dataset_id: str) -> dict[str, list[str]]:
+        with self._lock:
+            rec = self._db["datasets"].get(dataset_id)
+            if not rec:
+                raise KeyError(f"dataset not found: {dataset_id}")
+            if rec.get("isSample"):
+                raise ValueError("sample dataset cannot be deleted")
+
+            rec = self._db["datasets"].pop(dataset_id, None)
+            self._db["datasetIndicators"].pop(dataset_id, None)
+            self._db["mappings"].pop(dataset_id, None)
+
+            deleted_model_ids = [
+                model_id
+                for model_id, model in list(self._db["weightModels"].items())
+                if dataset_id in model.get("trainedOnDatasetIds", [])
+            ]
+            deleted_result_ids = [
+                result_id
+                for result_id, result in list(self._db["results"].items())
+                if dataset_id in result.get("datasetIds", []) or result.get("weightModelId") in deleted_model_ids
+            ]
+
+            for model_id in deleted_model_ids:
+                self._db["weightModels"].pop(model_id, None)
+            for result_id in deleted_result_ids:
+                self._db["results"].pop(result_id, None)
+            self._save()
+
+        self._delete_path_tree(Path(rec["csvPath"]).parent)
+        for model_id in deleted_model_ids:
+            self._delete_path_tree(self.paths.models_dir / model_id)
+        for result_id in deleted_result_ids:
+            self._delete_path_tree(self.paths.results_dir / result_id)
+
+        return {
+            "deletedModelIds": deleted_model_ids,
+            "deletedResultIds": deleted_result_ids,
+        }
+
     def put_dataset_files(self, dataset_id: str, csv_text: str, schema: dict[str, Any]) -> None:
         dataset_dir = self.paths.datasets_dir / dataset_id
         dataset_dir.mkdir(parents=True, exist_ok=True)
@@ -179,6 +222,18 @@ class Store:
         if not rec:
             raise KeyError(f"indicator not found: {key}")
         return rec
+
+    # ---- dataset indicators ----
+    def list_dataset_indicators(self, dataset_id: str) -> list[DatasetIndicatorRecord]:
+        with self._lock:
+            values = list((self._db["datasetIndicators"].get(dataset_id) or {}).values())
+        values.sort(key=lambda i: i["key"])
+        return values
+
+    def put_dataset_indicators(self, dataset_id: str, indicators: list[DatasetIndicatorRecord]) -> None:
+        with self._lock:
+            self._db["datasetIndicators"][dataset_id] = {indicator["key"]: indicator for indicator in indicators}
+            self._save()
 
     # ---- mappings ----
     def get_mapping(self, dataset_id: str) -> MappingRecord:
@@ -243,6 +298,27 @@ class Store:
             raise KeyError(f"weight model not found: {model_id}")
         return rec
 
+    def delete_weight_model(self, model_id: str) -> None:
+        with self._lock:
+            rec = self._db["weightModels"].get(model_id)
+            if not rec:
+                raise KeyError(f"weight model not found: {model_id}")
+            if str(model_id).startswith("sample_model_"):
+                raise ValueError("sample weight model cannot be deleted")
+            rec = self._db["weightModels"].pop(model_id, None)
+            deleted_result_ids = [
+                result_id
+                for result_id, result in list(self._db["results"].items())
+                if result.get("weightModelId") == model_id
+            ]
+            for result_id in deleted_result_ids:
+                self._db["results"].pop(result_id, None)
+            self._save()
+
+        self._delete_path_tree(self.paths.models_dir / model_id)
+        for result_id in deleted_result_ids:
+            self._delete_path_tree(self.paths.results_dir / result_id)
+
     # ---- results ----
     def create_result(self, result: ResultSetRecord) -> ResultSetRecord:
         with self._lock:
@@ -263,6 +339,25 @@ class Store:
             raise KeyError(f"result not found: {result_id}")
         return rec
 
+    def update_result_name(self, result_id: str, name: str) -> None:
+        with self._lock:
+            if result_id not in self._db["results"]:
+                raise KeyError(f"result not found: {result_id}")
+            self._db["results"][result_id]["name"] = name
+            self._save()
+
+    def delete_result(self, result_id: str) -> None:
+        with self._lock:
+            rec = self._db["results"].get(result_id)
+            if not rec:
+                raise KeyError(f"result not found: {result_id}")
+            if str(result_id).startswith("sample_result_"):
+                raise ValueError("sample result cannot be deleted")
+            rec = self._db["results"].pop(result_id, None)
+            self._save()
+
+        self._delete_path_tree(Path(rec["csvPath"]).parent)
+
     # ---- sample init ----
     def is_empty(self) -> bool:
         with self._lock:
@@ -276,3 +371,11 @@ class Store:
         csv_path = dataset_dir / "data.csv"
         shutil.copyfile(sample_csv, csv_path)
         return csv_path
+
+    def _delete_path_tree(self, path: Path) -> None:
+        if not path.exists():
+            return
+        if path.is_dir():
+            shutil.rmtree(path)
+        else:
+            path.unlink()

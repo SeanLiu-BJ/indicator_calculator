@@ -1,15 +1,54 @@
 {
   "name": "indicator-desktop",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "main": "main.js",
   "scripts": {
-    "dev": "electron ."
+    "dev": "node ./node_modules/electron/cli.js .",
+    "dev:vite": "INDICATOR_RENDERER_URL=http://127.0.0.1:5173 node ./node_modules/electron/cli.js .",
+    "stage:release": "bash ../scripts/build-desktop-release.sh",
+    "build:win": "npx electron-builder --win nsis"
   },
-  "dependencies": {
-    "electron": "28.3.3"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "electron-builder": "24.13.3"
+    "electron": "28.3.3",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.indicator.calculator",
+    "productName": "Indicator Calculator",
+    "asar": true,
+    "directories": {
+      "output": "dist/installer"
+    },
+    "files": [
+      "main.js",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../frontend/dist",
+        "to": "frontend/dist"
+      },
+      {
+        "from": "dist/win-build/backend-runtime",
+        "to": "backend_runtime"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }
