@@ -9,6 +9,7 @@ $OutputDir = Join-Path $RootDir "desktop/dist/win-build/backend-runtime"
 $WorkDir = Join-Path $RootDir "desktop/dist/win-build/pyinstaller-work"
 $SpecDir = Join-Path $RootDir "desktop/dist/win-build/spec"
 $EntryFile = Join-Path $RootDir "backend/app/windows_entry.py"
+$SampleDir = Join-Path $RootDir "backend/sample"
 
 if (-not $PythonExecutable) {
   $Candidates = @(
@@ -49,6 +50,7 @@ New-Item -ItemType Directory -Force -Path $SpecDir | Out-Null
   --workpath $WorkDir `
   --specpath $SpecDir `
   --paths $RootDir `
+  --add-data "${SampleDir};backend/sample" `
   --hidden-import uvicorn.logging `
   --hidden-import uvicorn.loops.auto `
   --hidden-import uvicorn.protocols.http.auto `
